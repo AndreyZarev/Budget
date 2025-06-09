@@ -3,286 +3,343 @@
 
 <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Бюджет с Графика и Запазване</title>
+    <title>Бюджет, Подготовка и Оценка</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/crypto-js@4.1.1/crypto-js.min.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
-            background: #f9f9f9;
+            max-width: 1000px;
+            margin: 20px auto;
             padding: 20px;
-            text-align: center;
-        }
-
-        h1,
-        h2 {
-            color: #333;
         }
 
         table {
-            margin: auto;
-            width: 90%;
-            border-collapse: collapse;
-            background: #fff;
-            box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
+            width: 100%;
             margin-bottom: 20px;
+            border-collapse: collapse;
         }
 
         th,
         td {
-            padding: 10px;
-            border: 1px solid #ddd;
+            padding: 8px;
+            border: 1px solid #ccc;
         }
 
         th {
-            background: #4CAF50;
-            color: white;
-        }
-
-        input[type="number"] {
-            width: 100%;
-            padding: 5px;
-            text-align: right;
-        }
-
-        tfoot td {
-            font-weight: bold;
             background: #f0f0f0;
         }
 
-        .positive {
-            color: green;
+        input[type="number"] {
+            width: 100px;
         }
 
-        .negative {
-            color: red;
+        .center {
+            text-align: center;
         }
 
-        #chart-container {
-            width: 95%;
-            margin: 20px auto;
+        canvas {
+            max-width: 100%;
+            height: auto;
         }
 
-        button {
-            padding: 10px 20px;
-            margin: 10px;
-            font-size: 1rem;
-            cursor: pointer;
+        .buttons {
+            margin-bottom: 10px;
+        }
+
+        .buttons button {
+            margin-right: 10px;
+        }
+
+        .summary-table {
+            width: 100%;
+            margin: 20px 0;
+            border: 2px solid #99c;
+        }
+
+        .summary-table th,
+        .summary-table td {
+            padding: 10px;
+            border: 1px solid #ccc;
+        }
+
+        .summary-table th {
+            background: #eef;
         }
     </style>
 </head>
 
 <body>
+    <h1 class="center">📊 Личен Бюджет, Подготовка и Оценка</h1>
 
-    <h1>Годишен Бюджет и Подготовка</h1>
+    <!-- Tables for inputs -->
+    <table>
+        <thead>
+            <tr>
+                <th colspan="2">Доход</th>
+            </tr>
+        </thead>
+        <tbody id="income">
+            <tr>
+                <td>Заплата</td>
+                <td><input type="number" data-group="доход"></td>
+            </tr>
+            <tr>
+                <td>Допълнителен доход</td>
+                <td><input type="number" data-group="доход"></td>
+            </tr>
+            <tr>
+                <td>Пасивен доход</td>
+                <td><input type="number" data-group="доход"></td>
+            </tr>
+        </tbody>
+    </table>
 
     <table>
         <thead>
             <tr>
-                <th>Категория</th>
-                <th>Описание</th>
-                <th>Сума (лв)</th>
+                <th colspan="2">Инвестиции</th>
             </tr>
         </thead>
-        <tbody>
+        <tbody id="investment">
             <tr>
-                <td>Доход</td>
-                <td>Заплата</td>
-                <td><input type="number" class="income" value="0"></td>
-            </tr>
-            <tr>
-                <td>Доход</td>
-                <td>Допълнителен доход</td>
-                <td><input type="number" class="income" value="0"></td>
-            </tr>
-            <tr>
-                <td>Доход</td>
-                <td>Помощи</td>
-                <td><input type="number" class="income" value="0"></td>
-            </tr>
-
-            <tr>
-                <td>Инвестиции</td>
                 <td>Криптовалута</td>
-                <td><input type="number" class="investment" value="0"></td>
+                <td><input type="number" data-group="инвестиции"></td>
             </tr>
             <tr>
-                <td>Инвестиции</td>
-                <td>Благородни метали</td>
-                <td><input type="number" class="investment" value="0"></td>
-            </tr>
-
-            <tr>
-                <td>Подготовка</td>
-                <td>Храна за съхранение</td>
-                <td><input type="number" class="prep" value="0"></td>
+                <td>Злато/Сребро</td>
+                <td><input type="number" data-group="инвестиции"></td>
             </tr>
             <tr>
-                <td>Подготовка</td>
-                <td>Инструменти и оборудване</td>
-                <td><input type="number" class="prep" value="0"></td>
+                <td>Земя/Имоти</td>
+                <td><input type="number" data-group="инвестиции"></td>
             </tr>
             <tr>
-                <td>Подготовка</td>
-                <td>Енергия (солар, батерии)</td>
-                <td><input type="number" class="prep" value="0"></td>
-            </tr>
-
-            <tr>
-                <td>Разход</td>
-                <td>Наем/Кредит</td>
-                <td><input type="number" class="expense" value="0"></td>
-            </tr>
-            <tr>
-                <td>Разход</td>
-                <td>Сметки и услуги</td>
-                <td><input type="number" class="expense" value="0"></td>
-            </tr>
-            <tr>
-                <td>Разход</td>
-                <td>Гориво</td>
-                <td><input type="number" class="expense" value="0"></td>
-            </tr>
-            <tr>
-                <td>Разход</td>
-                <td>Храна и битови</td>
-                <td><input type="number" class="expense" value="0"></td>
-            </tr>
-            <tr>
-                <td>Разход</td>
-                <td>Галена ❤️</td>
-                <td><input type="number" class="expense" value="0"></td>
+                <td>Резервна валута</td>
+                <td><input type="number" data-group="инвестиции"></td>
             </tr>
         </tbody>
-        <tfoot>
-            <tr>
-                <td colspan="2">Общо доход</td>
-                <td id="total-income">0 лв</td>
-            </tr>
-            <tr>
-                <td colspan="2">Общо инвестиции</td>
-                <td id="total-investment">0 лв</td>
-            </tr>
-            <tr>
-                <td colspan="2">Общо подготовка</td>
-                <td id="total-prep">0 лв</td>
-            </tr>
-            <tr>
-                <td colspan="2">Общо разходи</td>
-                <td id="total-expense">0 лв</td>
-            </tr>
-            <tr>
-                <td colspan="2">Остатък</td>
-                <td id="balance">0 лв</td>
-            </tr>
-        </tfoot>
     </table>
 
-    <button onclick="saveMonth()">📦 Запази месец</button>
-    <button onclick="removeLastMonth()">🗑️ Изтрий последния месец</button>
-    <button onclick="clearData()">🗑️ Изтрий всичко</button>
+    <table>
+        <thead>
+            <tr>
+                <th colspan="2">Подготовка</th>
+            </tr>
+        </thead>
+        <tbody id="prep">
+            <tr>
+                <td>Хранителни запаси</td>
+                <td><input type="number" data-group="подготовка"></td>
+            </tr>
+            <tr>
+                <td>Вода/Филтъри</td>
+                <td><input type="number" data-group="подготовка"></td>
+            </tr>
+            <tr>
+                <td>Оръжие/Самозащита</td>
+                <td><input type="number" data-group="подготовка"></td>
+            </tr>
+            <tr>
+                <td>Обучение/Знания</td>
+                <td><input type="number" data-group="подготовка"></td>
+            </tr>
+            <tr>
+                <td>Артикули за оцеляване</td>
+                <td><input type="number" data-group="подготовка"></td>
+            </tr>
+        </tbody>
+    </table>
 
-    <h2>📊 Годишна Графика</h2>
-    <div id="chart-container">
-        <canvas id="yearChart"></canvas>
+    <table>
+        <thead>
+            <tr>
+                <th colspan="2">Разходи</th>
+            </tr>
+        </thead>
+        <tbody id="expense">
+            <tr>
+                <td>Наем/Кредит</td>
+                <td><input type="number" data-group="разходи"></td>
+            </tr>
+            <tr>
+                <td>Сметки</td>
+                <td><input type="number" data-group="разходи"></td>
+            </tr>
+            <tr>
+                <td>Храна/Разходи за дома</td>
+                <td><input type="number" data-group="разходи"></td>
+            </tr>
+            <tr>
+                <td>Транспорт/Гориво</td>
+                <td><input type="number" data-group="разходи"></td>
+            </tr>
+            <tr>
+                <td>Развлечения</td>
+                <td><input type="number" data-group="разходи"></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="buttons">
+        <button onclick="saveMonth()">📦 Запази месец</button>
+        <button onclick="removeLastMonth()">🗑️ Изтрий последния месец</button>
+        <button onclick="clearData()">🧸 Изтрий всичко</button>
     </div>
 
+    <table class="summary-table" id="summaryTable"></table>
+
+    <h3>📈 Годишен график:</h3>
+    <canvas id="yearChart" height="100"></canvas>
+
     <script>
-        const selectors = {
-            income: ".income",
-            investment: ".investment",
-            prep: ".prep",
-            expense: ".expense"
-        };
+        const secretKey = 'bgt2025';
+        const storageKey = 'budgetData';
 
-        function sum(selector) {
-            return Array.from(document.querySelectorAll(selector)).reduce((a, el) => a + parseFloat(el.value || 0), 0);
+        function encryptData(data) {
+            return CryptoJS.AES.encrypt(data, secretKey).toString();
         }
 
-        function updateTotals() {
-            const income = sum(selectors.income);
-            const investment = sum(selectors.investment);
-            const prep = sum(selectors.prep);
-            const expense = sum(selectors.expense);
-            const balance = income - (investment + prep + expense);
-
-            document.getElementById("total-income").textContent = `${income.toFixed(2)} лв`;
-            document.getElementById("total-investment").textContent = `${investment.toFixed(2)} лв`;
-            document.getElementById("total-prep").textContent = `${prep.toFixed(2)} лв`;
-            document.getElementById("total-expense").textContent = `${expense.toFixed(2)} лв`;
-
-            const bal = document.getElementById("balance");
-            bal.textContent = `${balance.toFixed(2)} лв`;
-            bal.className = balance >= 0 ? "positive" : "negative";
-
-            return { income, investment, prep, expense, balance };
+        function decryptData(cipherText) {
+            try {
+                const bytes = CryptoJS.AES.decrypt(cipherText, secretKey);
+                return bytes.toString(CryptoJS.enc.Utf8);
+            } catch {
+                return "{}";
+            }
         }
 
-        document.querySelectorAll("input").forEach(el => el.addEventListener("input", updateTotals));
-        updateTotals();
+        let budgetData = {};
+        try {
+            const raw = localStorage.getItem(storageKey);
+            if (raw) {
+                const decrypted = decryptData(raw);
+                budgetData = JSON.parse(decrypted);
+            }
+        } catch (e) {
+            localStorage.removeItem(storageKey);
+        }
+
+        function sumInputs(group) {
+            return Array.from(document.querySelectorAll(`input[data-group="${group}"]`))
+                .map(input => parseFloat(input.value) || 0)
+                .reduce((a, b) => a + b, 0);
+        }
 
         function saveMonth() {
-            const data = JSON.parse(localStorage.getItem("yearlyData") || "[]");
             const now = new Date();
-            const monthLabel = now.toLocaleString('bg-BG', { month: 'long', year: 'numeric' });
+            const month = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
 
-            const totals = updateTotals();
-            data.push({ month: monthLabel, ...totals });
+            const data = {
+                доход: sumInputs("доход"),
+                инвестиции: sumInputs("инвестиции"),
+                подготовка: sumInputs("подготовка"),
+                разходи: sumInputs("разходи"),
+            };
+            data.остатък = data.доход - data.инвестиции - data.подготовка - data.разходи;
 
-            localStorage.setItem("yearlyData", JSON.stringify(data));
-            renderChart();
+            if (!budgetData[month]) budgetData[month] = [];
+            budgetData[month].push(data);
+
+            localStorage.setItem(storageKey, encryptData(JSON.stringify(budgetData)));
+            updateSummary();
+            updateChart();
+        }
+
+        function removeLastMonth() {
+            const now = new Date();
+            const month = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+
+            if (budgetData[month] && budgetData[month].length > 0) {
+                budgetData[month].pop();
+                if (budgetData[month].length === 0) delete budgetData[month];
+                localStorage.setItem(storageKey, encryptData(JSON.stringify(budgetData)));
+                updateSummary();
+                updateChart();
+            }
         }
 
         function clearData() {
-            if (confirm("Наистина ли искате да изтриете всички записани данни?")) {
-                localStorage.removeItem("yearlyData");
-                renderChart();
+            if (confirm("Сигурни ли сте, че искате да изтриете всички данни?")) {
+                budgetData = {};
+                localStorage.removeItem(storageKey);
+                updateSummary();
+                updateChart();
             }
         }
-        function removeLastMonth() {
-            let data = JSON.parse(localStorage.getItem("yearlyData") || "[]");
-            if (data.length === 0) {
-                alert("Няма записани месеци за изтриване.");
-                return;
-            }
 
-            if (confirm(`Да изтрием последния месец: "${data[data.length - 1].month}"?`)) {
-                data.pop();
-                localStorage.setItem("yearlyData", JSON.stringify(data));
-                renderChart();
-            }
+        function updateSummary() {
+            const table = document.getElementById("summaryTable");
+            table.innerHTML = `<tr><th>Месец</th><th>Доход</th><th>Инвестиции</th><th>Подготовка</th><th>Разходи</th><th>Остатък</th></tr>`;
+
+            Object.entries(budgetData).forEach(([month, records]) => {
+                const totals = records.reduce((acc, r) => {
+                    acc.доход += r.доход;
+                    acc.инвестиции += r.инвестиции;
+                    acc.подготовка += r.подготовка;
+                    acc.разходи += r.разходи;
+                    acc.остатък += r.остатък;
+                    return acc;
+                }, { доход: 0, инвестиции: 0, подготовка: 0, разходи: 0, остатък: 0 });
+
+                table.innerHTML += `<tr>
+                    <td>${month}</td>
+                    <td>${totals.доход.toFixed(2)} лв</td>
+                    <td>${totals.инвестиции.toFixed(2)} лв</td>
+                    <td>${totals.подготовка.toFixed(2)} лв</td>
+                    <td>${totals.разходи.toFixed(2)} лв</td>
+                    <td>${totals.остатък.toFixed(2)} лв</td>
+                </tr>`;
+            });
         }
-        function renderChart() {
-            const raw = JSON.parse(localStorage.getItem("yearlyData") || "[]");
-            const labels = raw.map(d => d.month);
-            const datasets = [
-                { label: "Доход", data: raw.map(d => d.income), backgroundColor: "#4CAF50" },
-                { label: "Инвестиции", data: raw.map(d => d.investment), backgroundColor: "#2196F3" },
-                { label: "Подготовка", data: raw.map(d => d.prep), backgroundColor: "#FF9800" },
-                { label: "Разходи", data: raw.map(d => d.expense), backgroundColor: "#f44336" },
-                { label: "Остатък", data: raw.map(d => d.balance), backgroundColor: "#9C27B0" }
-            ];
 
-            if (window.yearChart instanceof Chart) {
-                window.yearChart.destroy();
-            }
+        let chart;
+        function updateChart() {
+            const labels = Object.keys(budgetData);
+            const datasets = {
+                доход: [], инвестиции: [], подготовка: [], разходи: [], остатък: []
+            };
 
+            labels.forEach(month => {
+                const entries = budgetData[month];
+                const sum = entries.reduce((a, r) => {
+                    a.доход += r.доход;
+                    a.инвестиции += r.инвестиции;
+                    a.подготовка += r.подготовка;
+                    a.разходи += r.разходи;
+                    a.остатък += r.остатък;
+                    return a;
+                }, { доход: 0, инвестиции: 0, подготовка: 0, разходи: 0, остатък: 0 });
+
+                Object.keys(sum).forEach(key => datasets[key].push(sum[key]));
+            });
+
+            if (chart) chart.destroy();
             const ctx = document.getElementById("yearChart").getContext("2d");
-            window.yearChart = new Chart(ctx, {
-                type: "bar",
-                data: { labels, datasets },
+            chart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels,
+                    datasets: [
+                        { label: "Доход", data: datasets.доход, backgroundColor: '#4caf50' },
+                        { label: "Инвестиции", data: datasets.инвестиции, backgroundColor: '#2196f3' },
+                        { label: "Подготовка", data: datasets.подготовка, backgroundColor: '#ff9800' },
+                        { label: "Разходи", data: datasets.разходи, backgroundColor: '#f44336' },
+                        { label: "Остатък", data: datasets.остатък, backgroundColor: '#9c27b0' },
+                    ]
+                },
                 options: {
                     responsive: true,
-                    scales: {
-                        y: { beginAtZero: true }
-                    }
+                    scales: { y: { beginAtZero: true } }
                 }
             });
         }
 
-        renderChart();
+        window.onload = function () {
+            updateSummary();
+            updateChart();
+        }
     </script>
-
 </body>
 
 </html>
